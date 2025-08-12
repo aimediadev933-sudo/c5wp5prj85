@@ -1,0 +1,643 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LandSAGE4 - Smart Collaborative Decision Support</title>
+    <style>
+        :root {
+            --primary: #EF5350;
+            --secondary: #FF7043;
+            --body: #F8F3F0;
+            --text: #1D1D1B;
+            --secondary-dark: #9C3A26;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: var(--text);
+            background-color: var(--body);
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        /* Header */
+        header {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: white;
+            padding: 2rem 0;
+            position: relative;
+            overflow: hidden;
+        }
+
+        header::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 70%);
+            animation: float 6s ease-in-out infinite;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0px) rotate(0deg); }
+            50% { transform: translateY(-20px) rotate(5deg); }
+        }
+
+        .header-content {
+            position: relative;
+            z-index: 2;
+        }
+
+        .project-title {
+            font-size: clamp(2rem, 5vw, 3.5rem);
+            font-weight: 700;
+            margin-bottom: 1rem;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+
+        .project-subtitle {
+            font-size: clamp(1rem, 2.5vw, 1.5rem);
+            margin-bottom: 2rem;
+            opacity: 0.95;
+        }
+
+        /* Logos Section */
+        .logos-section {
+            background: white;
+            padding: 2rem 0;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+
+        .logos-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 3rem;
+            flex-wrap: wrap;
+        }
+
+        .logo {
+            height: 80px;
+            object-fit: contain;
+            transition: transform 0.3s ease, filter 0.3s ease;
+        }
+
+        .logo:hover {
+            transform: scale(1.1);
+            filter: brightness(1.1);
+        }
+
+        /* Navigation */
+        nav {
+            background: var(--secondary-dark);
+            padding: 1rem 0;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .nav-container {
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+            gap: 2rem;
+        }
+
+        .nav-link {
+            color: white;
+            text-decoration: none;
+            padding: 0.5rem 1rem;
+            border-radius: 5px;
+            transition: background-color 0.3s ease;
+            font-weight: 500;
+        }
+
+        .nav-link:hover {
+            background-color: var(--primary);
+        }
+
+        /* Main Content */
+        main {
+            padding: 3rem 0;
+        }
+
+        .section {
+            margin-bottom: 4rem;
+            background: white;
+            border-radius: 15px;
+            padding: 2.5rem;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.08);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .section:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.15);
+        }
+
+        .section-title {
+            color: var(--primary);
+            font-size: 2.2rem;
+            margin-bottom: 1.5rem;
+            position: relative;
+            padding-bottom: 0.5rem;
+        }
+
+        .section-title::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 60px;
+            height: 3px;
+            background: linear-gradient(90deg, var(--primary), var(--secondary));
+            border-radius: 2px;
+        }
+
+        /* Stats Grid */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 2rem;
+            margin: 2rem 0;
+        }
+
+        .stat-card {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: white;
+            padding: 1.5rem;
+            border-radius: 10px;
+            text-align: center;
+            transform: perspective(1000px) rotateX(0deg);
+            transition: transform 0.3s ease;
+        }
+
+        .stat-card:hover {
+            transform: perspective(1000px) rotateX(5deg);
+        }
+
+        .stat-number {
+            font-size: 2.5rem;
+            font-weight: bold;
+            display: block;
+        }
+
+        .stat-label {
+            font-size: 0.9rem;
+            opacity: 0.9;
+        }
+
+        /* Partners Grid */
+        .partners-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 1.5rem;
+            margin: 2rem 0;
+        }
+
+        .partner-card {
+            background: var(--body);
+            border-left: 4px solid var(--primary);
+            padding: 1.5rem;
+            border-radius: 8px;
+            transition: all 0.3s ease;
+        }
+
+        .partner-card:hover {
+            border-left-color: var(--secondary);
+            background: white;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+
+        .partner-name {
+            font-weight: bold;
+            color: var(--primary);
+            margin-bottom: 0.5rem;
+        }
+
+        /* Timeline */
+        .timeline {
+            position: relative;
+            margin: 2rem 0;
+        }
+
+        .timeline::before {
+            content: '';
+            position: absolute;
+            left: 20px;
+            top: 0;
+            bottom: 0;
+            width: 2px;
+            background: var(--primary);
+        }
+
+        .timeline-item {
+            position: relative;
+            margin-bottom: 2rem;
+            margin-left: 50px;
+        }
+
+        .timeline-marker {
+            position: absolute;
+            left: -37px;
+            top: 0;
+            width: 14px;
+            height: 14px;
+            background: var(--primary);
+            border: 3px solid white;
+            border-radius: 50%;
+            box-shadow: 0 0 0 3px var(--primary);
+        }
+
+        .timeline-content {
+            background: white;
+            padding: 1.5rem;
+            border-radius: 8px;
+            box-shadow: 0 3px 10px rgba(0,0,0,0.1);
+        }
+
+        .timeline-date {
+            color: var(--primary);
+            font-weight: bold;
+            font-size: 0.9rem;
+        }
+
+        /* SDG Tags */
+        .sdg-tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+            margin: 1rem 0;
+        }
+
+        .sdg-tag {
+            background: linear-gradient(135deg, var(--secondary), var(--primary));
+            color: white;
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 500;
+        }
+
+        /* Footer */
+        footer {
+            background: var(--secondary-dark);
+            color: white;
+            text-align: center;
+            padding: 2rem 0;
+            margin-top: 3rem;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .container {
+                padding: 0 15px;
+            }
+
+            .section {
+                padding: 1.5rem;
+            }
+
+            .logos-container {
+                gap: 1.5rem;
+            }
+
+            .logo {
+                height: 60px;
+            }
+
+            .nav-container {
+                gap: 1rem;
+            }
+
+            .timeline {
+                margin-left: -20px;
+            }
+
+            .timeline::before {
+                left: 15px;
+            }
+
+            .timeline-item {
+                margin-left: 45px;
+            }
+
+            .timeline-marker {
+                left: 8px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .stats-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .partners-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        /* Animations */
+        .fade-in {
+            opacity: 0;
+            transform: translateY(20px);
+            animation: fadeIn 0.8s ease forwards;
+        }
+
+        @keyframes fadeIn {
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .section:nth-child(even) { animation-delay: 0.2s; }
+        .section:nth-child(odd) { animation-delay: 0.4s; }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="container">
+            <div class="header-content">
+                <h1 class="project-title">LandSAGE4</h1>
+                <p class="project-subtitle">Smart Collaborative Decision Support for Monitoring and Mitigation of Natural Disasters in Southeast Asia</p>
+            </div>
+        </div>
+    </header>
+
+    <section class="logos-section">
+        <div class="container">
+            <div class="logos-container">
+                <img src="images/logos/tein-logo.png" alt="TEIN Cooperation Center" class="logo">
+                <img src="images/logos/asia-connect-logo.png" alt="Asi@Connect" class="logo">
+                <img src="images/logos/eu-logo.png" alt="European Union" class="logo">
+            </div>
+        </div>
+    </section>
+
+    <nav>
+        <div class="container">
+            <div class="nav-container">
+                <a href="#overview" class="nav-link">Overview</a>
+                <a href="#objectives" class="nav-link">Objectives</a>
+                <a href="#partners" class="nav-link">Partners</a>
+                <a href="#activities" class="nav-link">Activities</a>
+                <a href="#outcomes" class="nav-link">Outcomes</a>
+            </div>
+        </div>
+    </nav>
+
+    <main>
+        <div class="container">
+            <section id="overview" class="section fade-in">
+                <h2 class="section-title">Project Overview</h2>
+                <p>LandSAGE4 builds on three earlier LandSAGE projects to create a smart, collaborative decision support platform aimed at mitigating landslides, mudflows, and floods in Southeast Asia. Leveraging cyber-infrastructure such as CyberCANOE and the new SAGE3 platform, the project enhances regional capacity in disaster monitoring and data visualization.</p>
+                
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <span class="stat-number">6</span>
+                        <span class="stat-label">Countries Participating</span>
+                    </div>
+                    <div class="stat-card">
+                        <span class="stat-number">150+</span>
+                        <span class="stat-label">Participants Trained</span>
+                    </div>
+                    <div class="stat-card">
+                        <span class="stat-number">45%</span>
+                        <span class="stat-label">Female Participation</span>
+                    </div>
+                    <div class="stat-card">
+                        <span class="stat-number">4</span>
+                        <span class="stat-label">CyberCANOE Sites</span>
+                    </div>
+                </div>
+            </section>
+
+            <section id="objectives" class="section fade-in">
+                <h2 class="section-title">Project Objectives</h2>
+                <p><strong>Main Objective:</strong> To strengthen Southeast Asia's capacity in natural disaster monitoring and mitigation through enhanced data visualization, collaborative tools, and training using LandSAGE software and CyberCANOE systems.</p>
+                
+                <h3 style="color: var(--secondary); margin: 2rem 0 1rem;">Sub-objectives:</h3>
+                <ul style="margin-left: 2rem; line-height: 2;">
+                    <li>Enhance the LandSAGE software (usability, intelligence, scope)</li>
+                    <li>Deploy CyberCANOEs at new partner sites</li>
+                    <li>Promote cross-border training and research collaboration</li>
+                    <li>Integrate simulation, real-time analytics, and decision support systems</li>
+                </ul>
+            </section>
+
+            <section id="partners" class="section fade-in">
+                <h2 class="section-title">Partner Organizations</h2>
+                
+                <h3 style="color: var(--secondary); margin: 2rem 0 1rem;">Participating Countries</h3>
+                <div class="partners-grid">
+                    <div class="partner-card">
+                        <div class="partner-name">Mahidol University</div>
+                        <div>Thailand</div>
+                    </div>
+                    <div class="partner-card">
+                        <div class="partner-name">Institute of Technology of Cambodia</div>
+                        <div>Cambodia</div>
+                    </div>
+                    <div class="partner-card">
+                        <div class="partner-name">National University of Laos</div>
+                        <div>Laos</div>
+                    </div>
+                    <div class="partner-card">
+                        <div class="partner-name">Vietnam National University - FIMO Center</div>
+                        <div>Vietnam</div>
+                    </div>
+                    <div class="partner-card">
+                        <div class="partner-name">Universitas YARSI</div>
+                        <div>Indonesia</div>
+                    </div>
+                    <div class="partner-card">
+                        <div class="partner-name">Department of Science and Technology - ASTI</div>
+                        <div>Philippines</div>
+                    </div>
+                </div>
+
+                <h3 style="color: var(--secondary); margin: 2rem 0 1rem;">Expert Countries</h3>
+                <div class="partners-grid">
+                    <div class="partner-card">
+                        <div class="partner-name">National Institute of Advanced Industrial Science and Technology (AIST)</div>
+                        <div>Japan</div>
+                    </div>
+                    <div class="partner-card">
+                        <div class="partner-name">University of Hawaii</div>
+                        <div>United States</div>
+                    </div>
+                    <div class="partner-card">
+                        <div class="partner-name">Mekong River Commission Secretariat</div>
+                        <div>Regional Partner</div>
+                    </div>
+                </div>
+            </section>
+
+            <section id="activities" class="section fade-in">
+                <h2 class="section-title">Activities Timeline</h2>
+                
+                <div class="timeline">
+                    <div class="timeline-item">
+                        <div class="timeline-marker"></div>
+                        <div class="timeline-content">
+                            <div class="timeline-date">March 2022</div>
+                            <h4>Kickoff Meeting</h4>
+                            <p>Online planning and orientation by Mahidol University</p>
+                        </div>
+                    </div>
+                    
+                    <div class="timeline-item">
+                        <div class="timeline-marker"></div>
+                        <div class="timeline-content">
+                            <div class="timeline-date">May 2022</div>
+                            <h4>Laos Training Workshop</h4>
+                            <p>Hands-on CyberCANOE and LandSAGE training in Vientiane</p>
+                        </div>
+                    </div>
+                    
+                    <div class="timeline-item">
+                        <div class="timeline-marker"></div>
+                        <div class="timeline-content">
+                            <div class="timeline-date">July 2022</div>
+                            <h4>Cambodia Workshop</h4>
+                            <p>Training and knowledge exchange on data visualization and disaster monitoring</p>
+                        </div>
+                    </div>
+                    
+                    <div class="timeline-item">
+                        <div class="timeline-marker"></div>
+                        <div class="timeline-content">
+                            <div class="timeline-date">January 2023</div>
+                            <h4>Thailand Training</h4>
+                            <p>Technical training for Thai stakeholders at Thammasat University (Vietnam substitute)</p>
+                        </div>
+                    </div>
+                    
+                    <div class="timeline-item">
+                        <div class="timeline-marker"></div>
+                        <div class="timeline-content">
+                            <div class="timeline-date">February 2023</div>
+                            <h4>Final Workshop</h4>
+                            <p>Thailand-based review and strategic planning for future LandSAGE development</p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <section id="outcomes" class="section fade-in">
+                <h2 class="section-title">Key Outcomes</h2>
+                
+                <div style="display: grid; gap: 2rem; margin: 2rem 0;">
+                    <div style="background: var(--body); padding: 1.5rem; border-radius: 8px;">
+                        <h4 style="color: var(--primary); margin-bottom: 0.5rem;">Enhanced Software</h4>
+                        <p>A new, open-source LandSAGE version with improved analytical tools and real-time data integration</p>
+                    </div>
+                    
+                    <div style="background: var(--body); padding: 1.5rem; border-radius: 8px;">
+                        <h4 style="color: var(--primary); margin-bottom: 0.5rem;">CyberCANOE Deployment</h4>
+                        <p>Installed high-resolution display systems across four sites for collaborative disaster response</p>
+                    </div>
+                    
+                    <div style="background: var(--body); padding: 1.5rem; border-radius: 8px;">
+                        <h4 style="color: var(--primary); margin-bottom: 0.5rem;">Regional Training</h4>
+                        <p>Over 150 participants trained across 6 countries; significant female participation (approx. 45%)</p>
+                    </div>
+                    
+                    <div style="background: var(--body); padding: 1.5rem; border-radius: 8px;">
+                        <h4 style="color: var(--primary); margin-bottom: 0.5rem;">Collaborative Ecosystem</h4>
+                        <p>Developed a regional developer/user community around SAGE3 and LandSAGE tools</p>
+                    </div>
+                </div>
+
+                <h3 style="color: var(--secondary); margin: 2rem 0 1rem;">Relevant SDGs</h3>
+                <div class="sdg-tags">
+                    <span class="sdg-tag">SDG 3: Good Health and Well-being</span>
+                    <span class="sdg-tag">SDG 9: Industry, Innovation, and Infrastructure</span>
+                    <span class="sdg-tag">SDG 11: Sustainable Cities and Communities</span>
+                    <span class="sdg-tag">SDG 13: Climate Action</span>
+                    <span class="sdg-tag">SDG 17: Partnerships for the Goals</span>
+                </div>
+            </section>
+        </div>
+    </main>
+
+    <footer>
+        <div class="container">
+            <p>&copy; 2023 LandSAGE4 Project. Enhancing Southeast Asia's disaster preparedness through collaborative technology.</p>
+        </div>
+    </footer>
+
+    <script>
+        // Smooth scrolling for navigation links
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                document.querySelector(this.getAttribute('href')).scrollIntoView({
+                    behavior: 'smooth'
+                });
+            });
+        });
+
+        // Intersection Observer for fade-in animation
+        const observerOptions = {
+            threshold: 0.1,
+            rootMargin: '0px 0px -50px 0px'
+        };
+
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.style.opacity = '1';
+                    entry.target.style.transform = 'translateY(0)';
+                }
+            });
+        }, observerOptions);
+
+        document.querySelectorAll('.fade-in').forEach(el => {
+            observer.observe(el);
+        });
+
+        // Add active state to navigation links
+        window.addEventListener('scroll', () => {
+            let current = '';
+            const sections = document.querySelectorAll('section[id]');
+            
+            sections.forEach(section => {
+                const sectionTop = section.offsetTop;
+                const sectionHeight = section.clientHeight;
+                if (scrollY >= (sectionTop - 200)) {
+                    current = section.getAttribute('id');
+                }
+            });
+
+            document.querySelectorAll('.nav-link').forEach(link => {
+                link.classList.remove('active');
+                if (link.getAttribute('href') === '#' + current) {
+                    link.classList.add('active');
+                }
+            });
+        });
+    </script>
+
+    <style>
+        .nav-link.active {
+            background-color: var(--primary);
+        }
+    </style>
+</body>
+</html>
